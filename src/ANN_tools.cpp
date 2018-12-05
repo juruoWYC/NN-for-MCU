@@ -1,7 +1,7 @@
 #include "ANN_tools.h"
 
 /*矩阵点积*/
-float compute_innerprod(float x1[], float x2[], int len)
+float ANN_compute_innerprod(float x1[], float x2[], int len)
 {
 	float prod = 0;
 	int i = 0;
@@ -14,7 +14,7 @@ float compute_innerprod(float x1[], float x2[], int len)
 }
 
 /*ReLu激活函数*/
-void relu_activation(float inp[], int len)
+void ANN_relu_activation(float inp[], int len)
 {
 	int i = 0;
 	for (i = 0; i < len; i++)
@@ -27,7 +27,7 @@ void relu_activation(float inp[], int len)
 }
 
 /*Softmax函数*/
-void soft_max(float input[], float result[], int len)
+void ANN_soft_max(float input[], float result[], int len)
 {
 	float maxval = input[0];
 	float sum = 0.0f;
@@ -50,7 +50,7 @@ void soft_max(float input[], float result[], int len)
 }
 
 /*数据归一化*/
-void normalize_feature_zero_mean_unit_sigma(float inp[], float op[], int len)
+void ANN_normalize_feature_zero_mean_unit_sigma(float inp[], float op[], int len)
 {
 	int i;
 	float sum = 0, sumsq = 0, eps = 1e-16, mean = 0, sigma = 0;
@@ -69,7 +69,7 @@ void normalize_feature_zero_mean_unit_sigma(float inp[], float op[], int len)
 	}
 }
 
-void Inference(float *input, ANN_weights* pANN_weights)
+void ANN_Inference(float *input, ANN_weights* pANN_weights)
 {
 	float prod = 0.0;
 	int i = 0;
@@ -78,27 +78,27 @@ void Inference(float *input, ANN_weights* pANN_weights)
 	for (i = 0; i < NUM_FIRST_LAYER_NODES; i++)
 	{
 		pANN_weights->output_1[i] = pANN_weights->b_1[i];
-		prod = compute_innerprod(input, &pANN_weights->w_1[i][0], NUM_INPUT_NODES);
+		prod = ANN_compute_innerprod(input, &pANN_weights->w_1[i][0], NUM_INPUT_NODES);
 		pANN_weights->output_1[i] += prod;
 	}
 
-	relu_activation(pANN_weights->output_1, NUM_FIRST_LAYER_NODES);
+	ANN_relu_activation(pANN_weights->output_1, NUM_FIRST_LAYER_NODES);
 
 	for (i = 0; i < NUM_SECOND_LAYER_NODES; i++)
 	{
 		pANN_weights->output_2[i] = pANN_weights->b_2[i];
-		prod = compute_innerprod(pANN_weights->output_1, &pANN_weights->w_2[i][0], NUM_FIRST_LAYER_NODES);
+		prod = ANN_compute_innerprod(pANN_weights->output_1, &pANN_weights->w_2[i][0], NUM_FIRST_LAYER_NODES);
 		pANN_weights->output_2[i] += prod;
 	}
 
-	relu_activation(pANN_weights->output_2, NUM_SECOND_LAYER_NODES);
+	ANN_relu_activation(pANN_weights->output_2, NUM_SECOND_LAYER_NODES);
 
 	for (i = 0; i < NUM_THIRD_LAYER_NODES; i++)
 	{
 		pANN_weights->output_3[i] = pANN_weights->b_3[i];
-		prod = compute_innerprod(pANN_weights->output_2, &pANN_weights->w_3[i][0], NUM_SECOND_LAYER_NODES);
+		prod = ANN_compute_innerprod(pANN_weights->output_2, &pANN_weights->w_3[i][0], NUM_SECOND_LAYER_NODES);
 		pANN_weights->output_3[i] += prod;
 	}
 
-	soft_max(pANN_weights->output_3, pANN_weights->result, NUM_THIRD_LAYER_NODES);
+	ANN_soft_max(pANN_weights->output_3, pANN_weights->result, NUM_THIRD_LAYER_NODES);
 }
